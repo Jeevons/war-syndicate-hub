@@ -57,11 +57,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (latest)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "latest"
-
       - name: Setup Bun (latest)
         uses: oven-sh/setup-bun@v2
         with:
@@ -70,21 +65,10 @@ jobs:
       - name: Install Vercel CLI
         run: bun add -g vercel@latest
 
-      - name: Lier le projet Vercel
-        run: |
-          mkdir -p .vercel
-          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
-
-      - name: Pull Vercel Environment (Preview)
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project (Preview)
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Vercel (Preview)
+      - name: Deploy Preview to Vercel
         id: deploy
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOY_URL=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1 | tail -1)
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
 
       - name: Commenter la PR avec l'URL Preview
@@ -111,11 +95,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (latest)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "latest"
-
       - name: Setup Bun (latest)
         uses: oven-sh/setup-bun@v2
         with:
@@ -124,16 +103,5 @@ jobs:
       - name: Install Vercel CLI
         run: bun add -g vercel@latest
 
-      - name: Lier le projet Vercel
-        run: |
-          mkdir -p .vercel
-          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
-
-      - name: Pull Vercel Environment (Production)
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project (Production)
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Vercel (Production)
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Production to Vercel
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
