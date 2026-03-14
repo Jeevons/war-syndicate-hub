@@ -12,7 +12,5 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: true,
   sourcemaps: { disable: false },
   disableLogger: true,
-  webpack: {
-    automaticVercelMonitors: true,
-  },
+  automaticVercelMonitors: true,
 });
