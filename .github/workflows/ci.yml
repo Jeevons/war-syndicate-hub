@@ -48,6 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality
     if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -65,8 +67,9 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          DEPLOY_URL=$(bunx vercel@latest deploy --token="$VERCEL_TOKEN" --yes 2>&1 | tail -1)
-          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          OUTPUT=$(bunx vercel@latest deploy --token="$VERCEL_TOKEN" --yes 2>&1)
+          DEPLOY_URL=$(echo "$OUTPUT" | grep -E '^https://' | tail -1)
+          echo "url=${DEPLOY_URL}" >> $GITHUB_OUTPUT
 
       - name: Commenter la PR avec l'URL Preview
         uses: actions/github-script@v7
