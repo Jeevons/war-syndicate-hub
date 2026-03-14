@@ -42,7 +42,7 @@ jobs:
         run: bun run lint
 
       - name: Vitest — tests unitaires & intégration
-        run: bun run test --run
+        run: bun run test
 
   # ─────────────────────────────────────────────
   # JOB 2 — Deploy Preview (PR vers dev)
