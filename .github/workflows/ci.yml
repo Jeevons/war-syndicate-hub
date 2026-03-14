@@ -70,6 +70,11 @@ jobs:
       - name: Install Vercel CLI
         run: bun add -g vercel@latest
 
+      - name: Lier le projet Vercel
+        run: |
+          mkdir -p .vercel
+          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
+
       - name: Pull Vercel Environment (Preview)
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
@@ -118,6 +123,11 @@ jobs:
 
       - name: Install Vercel CLI
         run: bun add -g vercel@latest
+
+      - name: Lier le projet Vercel
+        run: |
+          mkdir -p .vercel
+          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
 
       - name: Pull Vercel Environment (Production)
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
