@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [dev]
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
   # ─────────────────────────────────────────────
   # JOB 1 — Quality Checks (lint + types + tests)
@@ -57,18 +53,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun (latest)
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Install Vercel CLI
-        run: bun add -g vercel@latest
+        run: npm install -g vercel@latest
 
       - name: Deploy Preview to Vercel
         id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          DEPLOY_URL=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1 | tail -1)
+          DEPLOY_URL=$(vercel deploy --token="$VERCEL_TOKEN" --yes 2>&1 | tail -1)
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
 
       - name: Commenter la PR avec l'URL Preview
@@ -95,13 +88,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun (latest)
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Install Vercel CLI
-        run: bun add -g vercel@latest
+        run: npm install -g vercel@latest
 
       - name: Deploy Production to Vercel
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prod --token="$VERCEL_TOKEN" --yes
