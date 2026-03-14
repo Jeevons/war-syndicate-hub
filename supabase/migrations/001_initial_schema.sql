@@ -56,5 +56,33 @@ CREATE TABLE IF NOT EXISTS public.strategies (
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- ── Trigger auto-update updated_at ──────────────────────────────────────────
+-- DEFAULT NOW() ne s'exécute qu'à l'INSERT ; ce trigger garantit la mise à
+-- jour automatique du champ updated_at lors de chaque UPDATE.
+
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_users_updated_at
+  BEFORE UPDATE ON public.users
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE TRIGGER trg_profiles_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE TRIGGER trg_news_updated_at
+  BEFORE UPDATE ON public.news
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE TRIGGER trg_strategies_updated_at
+  BEFORE UPDATE ON public.strategies
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
 -- ── Note : Tables RBAC (syndicate_roles, user_syndicate_roles) ───────────────
 -- Créées en Story 4.1 — NE PAS ajouter ici
