@@ -67,11 +67,18 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          OUTPUT=$(bunx vercel@latest deploy --token="$VERCEL_TOKEN" --yes 2>&1)
-          DEPLOY_URL=$(echo "$OUTPUT" | grep -E '^https://' | tail -1)
-          echo "url=${DEPLOY_URL}" >> $GITHUB_OUTPUT
+          OUTPUT=$(bunx vercel@latest deploy --token="$VERCEL_TOKEN" --yes 2>&1) || true
+          echo "$OUTPUT"
+          DEPLOY_URL=$(echo "$OUTPUT" | grep -E '^https://[^ ]*\.vercel\.app' | tail -1)
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "⚠️ Déploiement Vercel échoué ou URL non trouvée — vérifier VERCEL_ORG_ID et VERCEL_PROJECT_ID"
+            echo "url=" >> $GITHUB_OUTPUT
+          else
+            echo "url=${DEPLOY_URL}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commenter la PR avec l'URL Preview
+        if: steps.deploy.outputs.url != ''
         uses: actions/github-script@v7
         with:
           script: |
