@@ -1,6 +1,7 @@
-import { CheckCircle, Clock } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { RecruitmentForm } from '@/components/landing/RecruitmentForm'
 
 const RECRUITMENT_CONDITIONS = [
   'Hôtel de Ville niveau 12 minimum',
@@ -51,19 +52,8 @@ export function RecruitmentCTA() {
                 On cherche des joueurs sérieux et assidus, prêts à s&apos;investir dans la durée. Pas de place pour les touristes.
               </p>
 
-              {/* CTA — disabled, story 1.4 */}
-              <div className="mt-8" id="formulaire-candidature">
-                <button
-                  disabled
-                  aria-label="Formulaire de candidature — bientôt disponible"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/10 text-white/40 px-6 py-3.5 text-sm font-semibold cursor-not-allowed select-none"
-                >
-                  <Clock className="h-4 w-4" aria-hidden="true" />
-                  Formulaire — Bientôt disponible
-                </button>
-                <p className="mt-2 text-xs text-zinc-600">
-                  Le formulaire sera disponible lors de la prochaine ouverture de recrutement.
-                </p>
+              <div id="formulaire-candidature">
+                <RecruitmentForm />
               </div>
             </div>
 
