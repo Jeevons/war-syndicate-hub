@@ -1,0 +1,27 @@
+name: Guard — PR vers prod depuis dev uniquement
+
+on:
+  pull_request:
+    branches:
+      - prod
+
+jobs:
+  check-source-branch:
+    name: Source doit être dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier la branche source
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "❌ Merge bloqué — seule la branche 'dev' peut être mergée dans 'prod'."
+            echo ""
+            echo "   Branche source : ${{ github.head_ref }}"
+            echo "   Attendu        : dev"
+            echo ""
+            echo "   Workflow de branches correct :"
+            echo "   epic/{n} ──► dev ──► prod"
+            echo ""
+            echo "   Merges directs depuis une branche feature/epic vers prod sont interdits."
+            exit 1
+          fi
+          echo "✅ Source valide : dev → prod"
