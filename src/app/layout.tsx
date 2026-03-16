@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { CursorProvider } from "@/components/ui/CursorProvider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -39,6 +40,7 @@ export default function RootLayout({
         >
           <CursorProvider />
           {children}
+          <Toaster position="bottom-center" />
         </ThemeProvider>
       </body>
     </html>

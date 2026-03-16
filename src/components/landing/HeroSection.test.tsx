@@ -176,14 +176,15 @@ describe('RecruitmentCTA', () => {
     // HdV 12 minimum (mis à jour depuis le redesign — était 14)
     expect(screen.getByText(/hôtel de ville niveau 12/i)).toBeInTheDocument()
     expect(screen.getByText(/guerres de clans/i)).toBeInTheDocument()
-    expect(screen.getByText(/discord/i)).toBeInTheDocument()
+    expect(screen.getByText(/avoir un compte discord actif/i)).toBeInTheDocument()
     expect(screen.getByText(/capitale/i)).toBeInTheDocument()
   })
 
-  it('le bouton CTA est désactivé (Story 1.4 pas encore implémentée)', () => {
+  it('affiche le formulaire de candidature (Story 1.4 implémentée)', () => {
     render(<RecruitmentCTA />)
-    const button = screen.getByRole('button', { name: /bientôt disponible/i })
-    expect(button).toBeDisabled()
+    expect(screen.getByLabelText(/discord tag/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/tag clash of clans/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /envoyer ma candidature/i })).toBeInTheDocument()
   })
 })
 
