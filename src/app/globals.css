@@ -2,7 +2,65 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Supercell Magic — police officielle des jeux Supercell (fan content) */
+@font-face {
+  font-family: 'SupercellMagic';
+  src: url('/assets/fonts/supercell-magic.woff') format('woff'),
+       url('/assets/fonts/supercell-magic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Curseur Barbarian King gauntlet — !important pour écraser Tailwind ── */
+*, *::before, *::after {
+  cursor: url('/assets/coc/cursor-gauntlet-32.png') 6 2, auto !important;
+}
+
+/* ── Animation d'impact au clic ── */
+.cursor-click-burst {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249,115,22,0.9) 0%, rgba(234,88,12,0.4) 50%, transparent 70%);
+  animation: click-burst 0.35s ease-out forwards;
+}
+
+@keyframes click-burst {
+  0%   { transform: scale(0.2); opacity: 1; }
+  60%  { transform: scale(1.6); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* ── Animations hero ── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-supercell {
+  font-family: 'SupercellMagic', var(--font-body), system-ui, sans-serif;
+}
 
 @theme inline {
   --color-background: var(--background);

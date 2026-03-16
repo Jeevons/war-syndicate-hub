@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { AppShell } from "@/components/layout/AppShell";
+import { CursorProvider } from "@/components/ui/CursorProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const nunito = Nunito({
+  variable: "--font-body",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -27,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${nunito.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -35,7 +37,8 @@ export default function RootLayout({
           enableSystem={false}
           storageKey="war-syndicate-theme"
         >
-          <AppShell>{children}</AppShell>
+          <CursorProvider />
+          {children}
         </ThemeProvider>
       </body>
     </html>
