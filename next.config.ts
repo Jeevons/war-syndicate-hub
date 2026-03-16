@@ -3,13 +3,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  experimental: {
-    // NE PAS SUPPRIMER — bug Next.js 16.1.6 sur macOS (Darwin 25+) :
-    // isolatedDevBuild: true (défaut) change distDir → .next/dev, mais Turbopack
-    // tente d'écrire sa DB interne avant que ce répertoire soit créé → crash immédiat.
-    // Symptôme : "Persisting failed: Unable to write SST file 00000001.sst"
-    isolatedDevBuild: false,
-  },
 };
 
 export default withSentryConfig(nextConfig, {
