@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 const VIMEO_VIDEO_ID = '1173722073'
 
-export function VimeoBackground() {
-  const [mounted, setMounted] = useState(false)
+// useSyncExternalStore : retourne false côté serveur (SSR), true côté client (après hydratation)
+// Pattern recommandé par React pour éviter setState dans useEffect
+const emptySubscribe = () => () => {}
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+export function VimeoBackground() {
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
 
   if (!mounted) return null
 
