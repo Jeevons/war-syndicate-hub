@@ -18,6 +18,34 @@ CREATE TABLE IF NOT EXISTS public.applications (
 CREATE INDEX IF NOT EXISTS applications_coc_tag_idx
   ON public.applications (coc_tag);
 
--- RLS désactivé pour V1 — accès public en écriture via API Route
--- L'API Route valide les données via Zod avant insertion
-ALTER TABLE public.applications DISABLE ROW LEVEL SECURITY;
+-- Index unique partiel : un joueur (coc_tag) ne peut avoir qu'une candidature 'pending' à la fois
+-- Empêche les soumissions dupliquées sans bloquer les re-candidatures après rejet
+CREATE UNIQUE INDEX IF NOT EXISTS applications_coc_tag_pending_unique
+  ON public.applications (coc_tag)
+  WHERE (status = 'pending');
+
+-- Trigger updated_at — mis à jour automatiquement lors d'un UPDATE de statut
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER applications_updated_at
+  BEFORE UPDATE ON public.applications
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+-- RLS activé — protection contre l'accès direct avec la clé anon publique
+-- Sans RLS, la clé anon (exposée dans le bundle browser) permettrait un INSERT direct
+-- qui bypasse la validation Zod de l'API Route
+ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
+
+-- Politique d'insertion publique : tout visiteur peut soumettre une candidature
+-- La validation Zod (API Route) + les contraintes CHECK/UNIQUE sont les gardes-fous
+CREATE POLICY "allow_public_insert"
+  ON public.applications
+  FOR INSERT
+  TO anon
+  WITH CHECK (true);

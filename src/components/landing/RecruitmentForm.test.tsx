@@ -129,6 +129,12 @@ describe("RecruitmentForm", () => {
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalled()
     })
+
+    // AC-2 : vérifier que le formulaire est bien réinitialisé après succès
+    await waitFor(() => {
+      expect(screen.getByLabelText(/discord tag/i)).toHaveValue("")
+      expect(screen.getByLabelText(/tag clash of clans/i)).toHaveValue("")
+    })
   })
 
   // 7.6 — Soumission erreur réseau → toast error, données préservées

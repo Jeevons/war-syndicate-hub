@@ -24,6 +24,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { applicationSchema, type ApplicationFormData } from "@/types/application"
 
+// Défini hors composant — évite la recréation du tableau à chaque render (L-1)
+const HDV_LEVELS = Array.from({ length: 17 }, (_, i) => i + 1)
+
 export function RecruitmentForm() {
   const form = useForm<ApplicationFormData>({
     // Cast nécessaire : zodResolver avec z.coerce.number() infère hotelDeVille: unknown
@@ -47,6 +50,16 @@ export function RecruitmentForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
+
+      // 409 = candidature déjà en attente pour ce coc_tag — message spécifique, pas de Réessayer
+      if (res.status === 409) {
+        const errorBody = (await res.json()) as { error?: { message?: string } }
+        toast.error(
+          errorBody.error?.message ?? "Candidature déjà en attente pour ce tag CoC",
+          { duration: 5000 }
+        )
+        return
+      }
 
       if (!res.ok) throw new Error("Erreur serveur")
 
@@ -131,7 +144,7 @@ export function RecruitmentForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Array.from({ length: 17 }, (_, i) => i + 1).map((level) => (
+                  {HDV_LEVELS.map((level) => (
                     <SelectItem key={level} value={String(level)}>
                       HdV {level}
                     </SelectItem>

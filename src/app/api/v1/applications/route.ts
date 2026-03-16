@@ -2,7 +2,25 @@ import { NextRequest, NextResponse } from "next/server"
 import { applicationSchema } from "@/types/application"
 import { createClient } from "@/lib/supabase/server"
 
+// TODO (future epic) : rate limiting par IP via Upstash ou Vercel Edge Rate Limit
+// Actuellement protégé au niveau BDD : un seul 'pending' par coc_tag (index unique partiel)
+
 export async function POST(request: NextRequest) {
+  // Valider Content-Type avant toute tentative de parse JSON
+  const contentType = request.headers.get("content-type")
+  if (!contentType?.includes("application/json")) {
+    return NextResponse.json(
+      {
+        error: {
+          code: "INVALID_CONTENT_TYPE",
+          message: "Content-Type doit être application/json",
+          details: {},
+        },
+      },
+      { status: 415 }
+    )
+  }
+
   try {
     const body = (await request.json()) as unknown
     const parsed = applicationSchema.safeParse(body)
@@ -29,6 +47,21 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
+      // 23505 = unique_violation : candidature 'pending' déjà existante pour ce coc_tag
+      if (error.code === "23505") {
+        return NextResponse.json(
+          {
+            error: {
+              code: "DUPLICATE_APPLICATION",
+              message:
+                "Une candidature est déjà en attente pour ce tag CoC. Nous traiterons ton dossier sous peu.",
+              details: {},
+            },
+          },
+          { status: 409 }
+        )
+      }
+
       return NextResponse.json(
         {
           error: {
