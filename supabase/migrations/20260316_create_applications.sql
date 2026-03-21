@@ -42,10 +42,4 @@ CREATE TRIGGER applications_updated_at
 -- qui bypasse la validation Zod de l'API Route
 ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
--- Politique d'insertion publique : tout visiteur peut soumettre une candidature
--- La validation Zod (API Route) + les contraintes CHECK/UNIQUE sont les gardes-fous
-CREATE POLICY "allow_public_insert"
-  ON public.applications
-  FOR INSERT
-  TO anon
-  WITH CHECK (true);
+

@@ -3,6 +3,12 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      { hostname: 'cdn.discordapp.com' },
+      { hostname: 'media.discordapp.net' },
+    ],
+  },
   experimental: {
     // NE PAS SUPPRIMER — bug Next.js 16.1.6 sur macOS (Darwin 25+) :
     // isolatedDevBuild: true (défaut) change distDir → .next/dev, mais Turbopack

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { applicationSchema } from "@/types/application"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@supabase/supabase-js"
 
 // TODO (future epic) : rate limiting par IP via Upstash ou Vercel Edge Rate Limit
 // Actuellement protégé au niveau BDD : un seul 'pending' par coc_tag (index unique partiel)
@@ -38,12 +38,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Variables d'environnement Supabase manquantes (NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY)")
+      return NextResponse.json(
+        { error: { code: "CONFIGURATION_ERROR", message: "Erreur de configuration serveur", details: {} } },
+        { status: 500 }
+      )
+    }
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { error } = await supabase.from("applications").insert({
       discord_tag: parsed.data.discordTag,
       coc_tag: parsed.data.cocTag,
       hotel_de_ville: parsed.data.hotelDeVille,
-      message: parsed.data.message ?? null,
+      message: parsed.data.message || null,
     })
 
     if (error) {
@@ -78,7 +87,8 @@ export async function POST(request: NextRequest) {
       data: { success: true },
       meta: { timestamp: new Date().toISOString() },
     })
-  } catch {
+  } catch (error) {
+    console.error("Erreur API candidature:", error)
     return NextResponse.json(
       {
         error: {

@@ -137,6 +137,80 @@ describe("RecruitmentForm", () => {
     })
   })
 
+  // M-1 — Candidature dupliquée (409) → toast spécifique sans bouton Réessayer
+  it("affiche le message API spécifique et préserve les données en cas de 409 (candidature déjà en attente)", async () => {
+    const { toast } = await import("sonner")
+    const user = userEvent.setup()
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 409,
+      json: async () => ({
+        error: { message: "Une candidature est déjà en attente pour ce tag CoC. Nous traiterons ton dossier sous peu." },
+      }),
+    })
+
+    const { container } = render(<RecruitmentForm />)
+
+    const discordInput = screen.getByLabelText(/discord tag/i)
+    const cocInput = screen.getByLabelText(/tag clash of clans/i)
+
+    await user.type(discordInput, "PseudoDiscord#1234")
+    fireEvent.blur(discordInput)
+    await user.type(cocInput, "#ABC12345")
+    fireEvent.blur(cocInput)
+
+    await user.click(screen.getByRole("combobox"))
+    await waitFor(() => screen.getByText("HdV 10"))
+    await user.click(screen.getByText("HdV 10"))
+    fireEvent.blur(screen.getByRole("combobox"))
+
+    fireEvent.submit(container.querySelector("form")!)
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        "Une candidature est déjà en attente pour ce tag CoC. Nous traiterons ton dossier sous peu.",
+        expect.objectContaining({ duration: 5000 })
+      )
+    })
+
+    // Données préservées — formulaire non réinitialisé sur 409
+    expect(screen.getByLabelText(/discord tag/i)).toHaveValue("PseudoDiscord#1234")
+  })
+
+  // H-2 — Vrai échec réseau (fetch rejeté) → toast erreur + données préservées
+  it("affiche un toast erreur et préserve les données en cas de panne réseau réelle (fetch rejeté)", async () => {
+    const { toast } = await import("sonner")
+    const user = userEvent.setup()
+
+    global.fetch = vi.fn().mockRejectedValue(new Error("Network failure"))
+
+    const { container } = render(<RecruitmentForm />)
+
+    const discordInput = screen.getByLabelText(/discord tag/i)
+    const cocInput = screen.getByLabelText(/tag clash of clans/i)
+
+    await user.type(discordInput, "PseudoDiscord#1234")
+    fireEvent.blur(discordInput)
+    await user.type(cocInput, "#ABC12345")
+    fireEvent.blur(cocInput)
+
+    await user.click(screen.getByRole("combobox"))
+    await waitFor(() => screen.getByText("HdV 7"))
+    await user.click(screen.getByText("HdV 7"))
+    fireEvent.blur(screen.getByRole("combobox"))
+
+    fireEvent.submit(container.querySelector("form")!)
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalled()
+    })
+
+    // Données préservées — panne réseau ne doit pas réinitialiser le formulaire
+    expect(screen.getByLabelText(/discord tag/i)).toHaveValue("PseudoDiscord#1234")
+    expect(screen.getByLabelText(/tag clash of clans/i)).toHaveValue("#ABC12345")
+  })
+
   // 7.6 — Soumission erreur réseau → toast error, données préservées
   it("affiche un toast erreur et préserve les données du formulaire en cas d'erreur réseau", async () => {
     const { toast } = await import("sonner")
