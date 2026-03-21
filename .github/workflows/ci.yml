@@ -90,12 +90,35 @@ jobs:
             })
 
   # ─────────────────────────────────────────────
-  # JOB 3 — Deploy Production (push sur prod)
+  # JOB 3 — Migrate Database (push sur prod)
+  # ─────────────────────────────────────────────
+  migrate:
+    name: Apply Supabase Migrations
+    runs-on: ubuntu-latest
+    needs: quality
+    if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Apply migrations
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db push --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+
+  # ─────────────────────────────────────────────
+  # JOB 4 — Deploy Production (push sur prod)
   # ─────────────────────────────────────────────
   deploy-production:
     name: Deploy Production (Vercel)
     runs-on: ubuntu-latest
-    needs: quality
+    needs: [quality, migrate]
     if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
 
     steps:

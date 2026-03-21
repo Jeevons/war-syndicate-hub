@@ -4,7 +4,7 @@ export const applicationSchema = z.object({
   discordTag: z.string().min(1, "Discord tag requis"),
   cocTag: z
     .string()
-    .regex(/^#[A-Z0-9]{4,9}$/, "Format invalide — exemple : #ABC12345"),
+    .regex(/^#[A-Z0-9]{4,9}$/i, "Format invalide — exemple : #ABC12345"),
   hotelDeVille: z.coerce
     .number()
     .int()
