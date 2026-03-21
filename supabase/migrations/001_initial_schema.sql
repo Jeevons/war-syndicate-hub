@@ -68,19 +68,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_users_updated_at
+CREATE OR REPLACE TRIGGER trg_users_updated_at
   BEFORE UPDATE ON public.users
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TRIGGER trg_profiles_updated_at
+CREATE OR REPLACE TRIGGER trg_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TRIGGER trg_news_updated_at
+CREATE OR REPLACE TRIGGER trg_news_updated_at
   BEFORE UPDATE ON public.news
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TRIGGER trg_strategies_updated_at
+CREATE OR REPLACE TRIGGER trg_strategies_updated_at
   BEFORE UPDATE ON public.strategies
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
