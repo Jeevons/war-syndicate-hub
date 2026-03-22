@@ -176,7 +176,8 @@ describe('StepGuide', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining('Token invalide ou expiré')
+        expect.stringContaining('Token invalide ou expiré'),
+        expect.any(Object)
       )
     })
   })
@@ -207,7 +208,8 @@ describe('StepGuide', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining('déjà associé à un compte')
+        expect.stringContaining('déjà associé à un compte'),
+        expect.any(Object)
       )
     })
   })
@@ -232,7 +234,8 @@ describe('StepGuide', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining('indisponible')
+        expect.stringContaining('indisponible'),
+        expect.any(Object)
       )
     })
   })
@@ -252,7 +255,8 @@ describe('StepGuide', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining('Erreur réseau')
+        expect.stringContaining('Erreur réseau'),
+        expect.any(Object)
       )
     })
   })
