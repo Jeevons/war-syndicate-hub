@@ -16,9 +16,10 @@ const navLinks = [
 
 interface TopBarProps {
   onMenuClick: () => void
+  userMenu?: React.ReactNode
 }
 
-export function TopBar({ onMenuClick }: TopBarProps) {
+export function TopBar({ onMenuClick, userMenu }: TopBarProps) {
   const pathname = usePathname()
 
   return (
@@ -51,8 +52,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
         })}
       </nav>
 
-      {/* Actions droite — ThemeToggle + Hamburger mobile */}
+      {/* Actions droite — UserMenu + ThemeToggle + Hamburger mobile */}
       <div className="flex items-center gap-1">
+        {userMenu}
         <ThemeToggle />
         {/* Hamburger — visible uniquement sur mobile */}
         <Button
