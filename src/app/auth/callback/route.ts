@@ -101,9 +101,13 @@ export async function GET(request: NextRequest) {
 
   // Créer la réponse redirect et y appliquer les cookies de session explicitement
   const response = NextResponse.redirect(`${origin}${redirectTo}`)
-  pendingCookies.forEach(({ name, value, options }) =>
-    response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2])
-  )
+  pendingCookies.forEach(({ name, value, options }) => {
+    if (options) {
+      response.cookies.set(name, value, options)
+    } else {
+      response.cookies.set(name, value)
+    }
+  })
 
   return response
 }
