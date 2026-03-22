@@ -68,6 +68,45 @@ export async function verifyPlayerToken(
   return { valid: false }
 }
 
+export interface ClanMember {
+  tag: string
+  name: string
+  role: string  // 'member' | 'admin' (elder) | 'coLeader' | 'leader'
+}
+
+/**
+ * Récupère la liste des membres actifs du clan via cache Redis (TTL 300s — NFR-IN-01)
+ */
+export async function getClanMembers(clanTag: string): Promise<ClanMember[]> {
+  const encodedTag = encodeTag(clanTag)
+  const cacheKey = `coc:clan:members:${encodedTag}`
+
+  return getOrSet<ClanMember[]>(
+    cacheKey,
+    async () => {
+      const response = await fetch(
+        `${COC_BASE_URL}/clans/${encodedTag}/members`,
+        {
+          headers: getCocHeaders(),
+          signal: AbortSignal.timeout(5000),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`[CocClient] getClanMembers HTTP ${response.status}`)
+      }
+
+      const data = await response.json()
+      return (data.items ?? []).map((item: Record<string, unknown>) => ({
+        tag: item.tag as string,
+        name: item.name as string,
+        role: item.role as string,
+      }))
+    },
+    300 // TTL 300s — NFR-IN-01
+  )
+}
+
 /**
  * Récupère les données d'un joueur via cache Redis (TTL 300s — NFR-IN-01)
  */

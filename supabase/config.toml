@@ -1,0 +1,8 @@
+# supabase/config.toml
+# Configuration locale Supabase — war-syndicate-hub
+
+[functions.verify-clan-membership]
+# ⚠️ Le cron schedule n'est PAS configurable via config.toml dans cette version du CLI.
+# Configurer le schedule depuis le Dashboard Supabase :
+#   → Edge Functions → verify-clan-membership → Schedules → Add Schedule
+#   → Expression : "0 */6 * * *"  (toutes les 6 heures — AC-1)
