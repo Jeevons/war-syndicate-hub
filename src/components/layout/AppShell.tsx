@@ -5,13 +5,19 @@ import { TopBar } from "@/components/layout/TopBar"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { MobileDrawer } from "@/components/layout/MobileDrawer"
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  userMenu,
+}: {
+  children: React.ReactNode
+  userMenu?: React.ReactNode
+}) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <div className="overflow-hidden h-screen flex flex-col bg-background text-foreground">
       {/* Top Bar — toujours visible */}
-      <TopBar onMenuClick={() => setDrawerOpen(true)} />
+      <TopBar onMenuClick={() => setDrawerOpen(true)} userMenu={userMenu} />
 
       {/* Corps de l'application */}
       <div className="flex flex-1 overflow-hidden">
