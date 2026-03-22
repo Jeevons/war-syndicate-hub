@@ -42,7 +42,7 @@ export function OnboardingCarousel() {
     return () => clearInterval(interval)
   }, [])
 
-  const slide = slides[current]
+  const slide = slides[current]!
 
   return (
     <div className="relative h-full w-full bg-zinc-950 overflow-hidden">
